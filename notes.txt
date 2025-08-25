@@ -1,0 +1,3 @@
+git add . (Stage all changes)
+git commit -m "Describe your changes" (Save the changes locally)
+git push (Upload the saved changes to GitHub)

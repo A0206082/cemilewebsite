@@ -1,0 +1,22 @@
+# Dependencies - This will ignore ALL node_modules folders, everywhere
+node_modules/
+
+# Next.js build artifacts
+.next/
+out/
+
+# Server build folder
+build/
+
+# Environment variables - DO NOT SHARE THESE
+.env*
+!.env.example
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System files
+.DS_Store
+```    The most important change is changing `/node_modules` to `node_modules/`. This ignores any folder with that name, no matter where it is.
