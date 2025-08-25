@@ -2,32 +2,16 @@
 import Head from 'next/head';
 
 export async function getStaticProps() {
-    try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
-        const res = await fetch(`${apiUrl}/api/content/aboutPageText`);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${apiUrl}/api/content/homepageWelcome`);
+    const data = await res.json();
 
-        // If the response is not OK (like a 404 or 500), don't try to parse it as JSON
-        if (!res.ok) {
-            throw new Error(`Failed to fetch: ${res.status}`);
-        }
-
-        const data = await res.json();
-
-        return {
-            props: {
-                aboutContent: data, // Pass the successful data
-            },
-            revalidate: 10,
-        };
-    } catch (error) {
-        console.error("Error in getStaticProps for /about:", error);
-        // If ANYTHING goes wrong, return a default value so the page doesn't crash
-        return {
-            props: {
-                homeContent: { key: 'homepageWelcome', value: 'Error: Could not load content.' },
-            },
-        };
-    }
+    return {
+        props: {
+            homeContent: data,
+        },
+        revalidate: 10,
+    };
 }
 
 export default function Home({ homeContent }) {
