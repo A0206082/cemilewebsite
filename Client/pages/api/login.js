@@ -1,5 +1,5 @@
-// pages/api/login.js
-import jwt from 'jsonwebtoken'; // Import the new library
+// Client/pages/api/login.js
+import { encrypt } from '../../lib/jwt'; // Import our new function
 import { serialize } from 'cookie';
 
 export default async function handler(req, res) {
@@ -10,12 +10,11 @@ export default async function handler(req, res) {
     const { password } = req.body;
 
     if (password === process.env.ADMIN_PASSWORD) {
-        // Create a token using the new library
-        const token = jwt.sign(
-            { user: 'admin' },    // The data payload
-            process.env.JWT_SECRET, // The secret key
-            { expiresIn: '8h' }    // The expiration time
-        );
+        // Create the session payload
+        const session = { user: 'admin', expires: new Date(Date.now() + 8 * 60 * 60 * 1000) };
+
+        // Encrypt the session to a token
+        const token = await encrypt(session);
 
         const cookie = serialize('auth_token', token, {
             httpOnly: true,

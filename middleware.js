@@ -1,34 +1,25 @@
-// middleware.js
+// middleware.js (in the root folder)
 import { NextResponse } from 'next/server';
-import { jwtVerify } from 'jsonwebtoken';
+import { decrypt } from './Client/lib/jwt'; // Note the path to our helper
 
-export const runtime = 'nodejs';
-
-async function verify(token, secret) {
-    try {
-        await jwt.verify(token, secret);
-        return true;
-    } catch (error) {
-        return false;
-    }
-}
 export async function middleware(req) {
     const token = req.cookies.get('auth_token')?.value;
-    const secret = process.env.JWT_SECRET;
-    const { pathname } = req.nextUrl;
 
+    // If no token, redirect to login
     if (!token) {
         return NextResponse.redirect(new URL('/login', req.url));
     }
 
-    try {
-        // Use the new library to verify the token
-        jwt.verify(token, secret);
-        return NextResponse.next();
-    } catch (err) {
-        console.error('JWT Verification failed:', err.message);
+    // Decrypt the token
+    const decryptedSession = await decrypt(token);
+
+    // If the token is invalid or expired, redirect to login
+    if (!decryptedSession) {
         return NextResponse.redirect(new URL('/login', req.url));
     }
+
+    // If the token is valid, allow the request to proceed
+    return NextResponse.next();
 }
 
 export const config = {
