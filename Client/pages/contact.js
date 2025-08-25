@@ -24,7 +24,7 @@ export async function getStaticProps() {
         // If ANYTHING goes wrong, return a default value so the page doesn't crash
         return {
             props: {
-                aboutContent: { key: 'aboutPageText', value: 'Error: Could not load content.' },
+                contactContent: { key: 'contactPageInfo', value: 'Error: Could not load content.' },
             },
         };
     }
