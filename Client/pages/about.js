@@ -3,18 +3,32 @@ import Head from 'next/head';
 
 // This is the new function that fetches data before the page is rendered
 export async function getStaticProps() {
-    // Fetch data from our API endpoint for the about page
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
-    const res = await fetch(`${apiUrl}/api/content/aboutPageText`);
-    const data = await res.json();
+    try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+        const res = await fetch(`${apiUrl}/api/content/aboutPageText`);
 
-    // The data we fetched is passed to the page component as 'props'
-    return {
-        props: {
-            aboutContent: data, // The 'data' object contains our 'key' and 'value'
-        },
-        revalidate: 10, // Optional: Next.js will re-fetch the data every 10 seconds
-    };
+        // If the response is not OK (like a 404 or 500), don't try to parse it as JSON
+        if (!res.ok) {
+            throw new Error(`Failed to fetch: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        return {
+            props: {
+                aboutContent: data, // Pass the successful data
+            },
+            revalidate: 10,
+        };
+    } catch (error) {
+        console.error("Error in getStaticProps for /about:", error);
+        // If ANYTHING goes wrong, return a default value so the page doesn't crash
+        return {
+            props: {
+                aboutContent: { key: 'aboutPageText', value: 'Error: Could not load content.' },
+            },
+        };
+    }
 }
 
 // The 'aboutContent' prop comes from getStaticProps
